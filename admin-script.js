@@ -924,3 +924,4 @@ document.head.appendChild(style);
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', adminApp.init);
+
