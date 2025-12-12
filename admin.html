@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Dimsum Menul</title>
+    <link rel="stylesheet" href="admin-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <i class="fas fa-shield-alt"></i>
+                <h2>Admin Panel</h2>
+                <p>Dimsum Menul</p>
+            </div>
+            <form id="login-form" onsubmit="return adminApp.login(event)">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <p class="login-hint">Default: admin / admin123</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="admin-dashboard" class="dashboard-container" style="display:none;">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-utensils"></i>
+                <h3>Dimsum Menul</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" onclick="adminApp.showTab('dashboard')">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" onclick="adminApp.showTab('products')">
+                    <i class="fas fa-box"></i> Produk
+                </a>
+                <a href="#" class="nav-item" onclick="adminApp.showTab('orders')">
+                    <i class="fas fa-shopping-cart"></i> Pesanan
+                </a>
+                <a href="#" class="nav-item" onclick="adminApp.showTab('reports')">
+                    <i class="fas fa-chart-bar"></i> Laporan
+                </a>
+                <a href="#" class="nav-item" onclick="adminApp.showTab('settings')">
+                    <i class="fas fa-cog"></i> Pengaturan
+                </a>
+                <a href="#" class="nav-item logout" onclick="adminApp.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- HEADER -->
+            <header class="content-header">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="header-actions">
+                    <span class="user-info">
+                        <i class="fas fa-user-circle"></i> Admin
+                    </span>
+                </div>
+            </header>
+
+            <!-- TAB: DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-orders">0</h3>
+                            <p>Total Pesanan</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-products">4</h3>
+                            <p>Total Produk</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-pending">0</h3>
+                            <p>Pesanan Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-completed">0</h3>
+                            <p>Selesai</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-orders">
+                    <h2>Pesanan Terbaru</h2>
+                    <div id="recent-orders-list" class="orders-list">
+                        <p class="empty-state">Belum ada pesanan</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: PRODUCTS -->
+            <div id="tab-products" class="tab-content">
+                <div class="tab-header">
+                    <h2>Manajemen Produk</h2>
+                    <button class="btn-primary" onclick="adminApp.openProductModal()">
+                        <i class="fas fa-plus"></i> Tambah Produk
+                    </button>
+                </div>
+                <div id="products-list" class="products-grid">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+
+            <!-- TAB: ORDERS -->
+            <div id="tab-orders" class="tab-content">
+                <h2 style="margin-bottom:2rem;">Manajemen Pesanan</h2>
+
+                <!-- Order Status Tabs -->
+                <div class="order-tabs"
+                    style="display:flex; gap:1rem; margin-bottom:2rem; border-bottom:2px solid #e0e0e0; padding-bottom:0;">
+                    <button class="order-tab-btn active" onclick="adminApp.filterOrders('all')" data-status="all">
+                        <i class="fas fa-list"></i> Semua Pesanan
+                        <span class="tab-count" id="count-all">0</span>
+                    </button>
+                    <button class="order-tab-btn" onclick="adminApp.filterOrders('pending')" data-status="pending">
+                        <i class="fas fa-clock"></i> Pending
+                        <span class="tab-count" id="count-pending">0</span>
+                    </button>
+                    <button class="order-tab-btn" onclick="adminApp.filterOrders('processing')"
+                        data-status="processing">
+                        <i class="fas fa-sync"></i> Diproses
+                        <span class="tab-count" id="count-processing">0</span>
+                    </button>
+                    <button class="order-tab-btn" onclick="adminApp.filterOrders('completed')" data-status="completed">
+                        <i class="fas fa-check-circle"></i> Selesai
+                        <span class="tab-count" id="count-completed">0</span>
+                    </button>
+                </div>
+
+                <div id="orders-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tanggal</th>
+                                <th>Pelanggan</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-tbody">
+                            <tr>
+                                <td colspan="7" class="empty-state">Belum ada pesanan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: REPORTS -->
+            <div id="tab-reports" class="tab-content">
+                <h2 style="margin-bottom:2rem;">📊 Laporan Pendapatan</h2>
+
+                <!-- Date Range Filter -->
+                <div
+                    style="background:white; padding:1.5rem; border-radius:12px; margin-bottom:2rem; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+                    <div style="display:flex; gap:1rem; align-items:end; flex-wrap:wrap;">
+                        <div class="form-group" style="margin-bottom:0; flex:1; min-width:200px;">
+                            <label>Dari Tanggal</label>
+                            <input type="date" id="report-date-from"
+                                style="padding:10px; border:2px solid #e0e0e0; border-radius:8px; width:100%;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0; flex:1; min-width:200px;">
+                            <label>Sampai Tanggal</label>
+                            <input type="date" id="report-date-to"
+                                style="padding:10px; border:2px solid #e0e0e0; border-radius:8px; width:100%;">
+                        </div>
+                        <button class="btn-primary" onclick="adminApp.generateReport()">
+                            <i class="fas fa-sync"></i> Generate Laporan
+                        </button>
+                        <button class="btn-secondary" onclick="adminApp.exportReport()">
+                            <i class="fas fa-download"></i> Export PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="stats-grid" style="margin-bottom:2rem;">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:linear-gradient(135deg, #10b981, #059669);">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="report-total-revenue">Rp 0</h3>
+                            <p>Total Pendapatan</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:linear-gradient(135deg, #3b82f6, #2563eb);">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="report-total-orders">0</h3>
+                            <p>Total Pesanan</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:linear-gradient(135deg, #f59e0b, #d97706);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="report-avg-order">Rp 0</h3>
+                            <p>Rata-rata per Pesanan</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="report-total-items">0</h3>
+                            <p>Total Item Terjual</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Products -->
+                <div
+                    style="background:white; padding:2rem; border-radius:16px; margin-bottom:2rem; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+                    <h3 style="margin-bottom:1.5rem; display:flex; align-items:center; gap:10px;">
+                        <i class="fas fa-trophy" style="color:#f59e0b;"></i>
+                        Produk Terlaris
+                    </h3>
+                    <div id="top-products-list">
+                        <p class="empty-state">Belum ada data</p>
+                    </div>
+                </div>
+
+                <!-- Detailed Report Table -->
+                <div
+                    style="background:white; padding:2rem; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+                    <h3 style="margin-bottom:1.5rem;">Detail Transaksi</h3>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-tbody">
+                                <tr>
+                                    <td colspan="6" class="empty-state">Pilih rentang tanggal dan klik Generate Laporan
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: SETTINGS -->
+            <div id="tab-settings" class="tab-content">
+                <h2>Pengaturan Website</h2>
+                <form id="settings-form" onsubmit="return adminApp.saveSettings(event)">
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-store"></i> Informasi Toko</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nama Toko</label>
+                                <input type="text" id="set-store-name" value="DIMSUM MENUL">
+                            </div>
+                            <div class="form-group">
+                                <label>Tagline</label>
+                                <input type="text" id="set-tagline" value="Spesial Resep Bunda Nathan">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-phone"></i> Kontak</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nomor WhatsApp</label>
+                                <input type="tel" id="set-whatsapp" value="6281234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="set-email" value="info@dimsummenul.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-clock"></i> Jam Operasional</h3>
+                        <div class="form-group">
+                            <label>Senin - Sabtu</label>
+                            <input type="text" id="set-hours-weekday" value="08:00 - 20:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Minggu</label>
+                            <input type="text" id="set-hours-sunday" value="09:00 - 18:00">
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-map-marker-alt"></i> Area Pengiriman</h3>
+                        <div class="form-group">
+                            <label>Wilayah</label>
+                            <textarea id="set-delivery-area" rows="2">Jakarta, Tangerang, Depok, Bekasi</textarea>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-pepper-hot"></i> Manajemen Topping</h3>
+                        <p style="color:#666; margin-bottom:1rem; font-size:0.9rem;">
+                            Kelola topping yang tersedia untuk customer. Topping akan muncul di halaman pemesanan.
+                        </p>
+
+                        <!-- Add Topping Form -->
+                        <div style="background:#f8f9fa; padding:1.5rem; border-radius:12px; margin-bottom:1.5rem;">
+                            <h4 style="margin-bottom:1rem; font-size:1rem;">Tambah Topping Baru</h4>
+                            <div class="form-row">
+                                <div class="form-group" style="margin-bottom:0;">
+                                    <label>Nama Topping</label>
+                                    <input type="text" id="new-topping-name" placeholder="Contoh: Saus Sambal Matah">
+                                </div>
+                                <div class="form-group" style="margin-bottom:0;">
+                                    <label>Harga Tambahan (Rp)</label>
+                                    <input type="number" id="new-topping-price" placeholder="Contoh: 3000">
+                                </div>
+                            </div>
+                            <button type="button" class="btn-primary" onclick="adminApp.addTopping()"
+                                style="margin-top:1rem;">
+                                <i class="fas fa-plus"></i> Tambah Topping
+                            </button>
+                        </div>
+
+                        <!-- Topping List -->
+                        <div>
+                            <h4 style="margin-bottom:1rem; font-size:1rem;">Daftar Topping Tersedia</h4>
+                            <div id="toppings-list" style="display:flex; flex-direction:column; gap:0.75rem;">
+                                <!-- Toppings will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary btn-large">
+                        <i class="fas fa-save"></i> Simpan Pengaturan
+                    </button>
+                </form>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL: PRODUCT FORM -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="product-modal-title">Tambah Produk</h3>
+                <button class="close-modal" onclick="adminApp.closeProductModal()">&times;</button>
+            </div>
+            <form id="product-form" onsubmit="return adminApp.saveProduct(event)">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label>Nama Produk</label>
+                    <input type="text" id="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Harga (Rp)</label>
+                    <input type="number" id="product-price" required>
+                </div>
+                <div class="form-group">
+                    <label>Deskripsi</label>
+                    <textarea id="product-desc" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Gambar Produk</label>
+                    <div style="display:flex; flex-direction:column; gap:1rem;">
+                        <!-- Image Preview -->
+                        <div id="image-preview-container" style="display:none;">
+                            <img id="image-preview" src="" alt="Preview"
+                                style="max-width:100%; max-height:200px; border-radius:8px; border:2px solid #e0e0e0;">
+                            <button type="button" onclick="adminApp.removeImage()"
+                                style="margin-top:0.5rem; padding:6px 12px; background:#ef4444; color:white; border:none; border-radius:6px; cursor:pointer; font-size:0.85rem;">
+                                <i class="fas fa-times"></i> Hapus Gambar
+                            </button>
+                        </div>
+
+                        <!-- Upload Button -->
+                        <div id="upload-section">
+                            <input type="file" id="product-img-file" accept="image/*" style="display:none;"
+                                onchange="adminApp.handleImageUpload(event)">
+                            <button type="button" onclick="document.getElementById('product-img-file').click()"
+                                class="btn-secondary" style="width:100%;">
+                                <i class="fas fa-upload"></i> Upload Gambar
+                            </button>
+                            <p style="font-size:0.8rem; color:#666; margin-top:0.5rem; text-align:center;">
+                                Atau masukkan URL gambar di bawah
+                            </p>
+                        </div>
+
+                        <!-- URL Input (Optional) -->
+                        <input type="text" id="product-img" placeholder="https://... atau nama file (opsional)">
+                        <input type="hidden" id="product-img-data">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="adminApp.closeProductModal()">Batal</button>
+                    <button type="submit" class="btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ORDER DETAIL -->
+    <div id="order-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detail Pesanan</h3>
+                <button class="close-modal" onclick="adminApp.closeOrderModal()">&times;</button>
+            </div>
+            <div id="order-detail-content">
+                <!-- Order details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-script.js"></script>
+</body>
+
+</html>
